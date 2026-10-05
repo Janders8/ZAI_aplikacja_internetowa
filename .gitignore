@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Baza danych SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Hasla
+.env
+
+# JavaScript
+node_modules/
+
+# Pliki edytora
+.vscode/
