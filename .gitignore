@@ -4,7 +4,7 @@ __pycache__/
 .venv/
 venv/
 
-# Baza danych SQLite
+# Baza danych w SQLite
 *.db
 *.sqlite
 *.sqlite3
@@ -14,6 +14,7 @@ venv/
 
 # JavaScript
 node_modules/
+dist/
 
-# Pliki edytora
+# Pliki vsc
 .vscode/
