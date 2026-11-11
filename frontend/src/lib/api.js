@@ -31,8 +31,10 @@ async function send(method, path, data) {
   // Serwer odpowiedział ale z błędem
   if (!response.ok) {
     let message = 'Błąd serwera (' + response.status + ')'
-    if (response.headers.get('Content-Type') === 'application/problem+json') {
-      message = JSON.parse(text).detail
+    const contentType = response.headers.get('Content-Type')
+    if (contentType === 'application/problem+json') {
+      const problem = JSON.parse(text)
+      message = problem.detail
     }
     const error = new Error(message)
     error.status = response.status
