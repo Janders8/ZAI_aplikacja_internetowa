@@ -7,6 +7,7 @@
   // https://date-fns.org/docs/format
   import { get } from './api.js'
   import { format, subDays } from 'date-fns'
+  import SeriesChart from './SeriesChart.svelte'
 
   // Wszystkie serie do wyboru w filtrze
   let allSeries = $state([])
@@ -19,6 +20,9 @@
    // Tabela wyników, gdzie kolumny to serie i wiersze to czas
   let shownSeries = $state([])
   let rows = $state([])
+
+   // Wykres, na którym wyróżniane są punkty klikniętego wiersza tabeli
+  let seriesChart = $state()
 
   // dane w trakcie pobierania (do informacji o pobieraniu i o błędach)
   let loading = $state(start())
@@ -119,8 +123,14 @@
   {#if rows.length === 0}
     <p>Brak wyników w wybranym przedziale czasu.</p>
   {:else}
+  <!-- Wykres i tabela, obok siebie na szerokim ekranie, jedno pod drugim na telefonie -->
+  <div class="results">
+  <!-- Wykres z wynikami -->
+  <div class="chart-box">
+    <SeriesChart bind:this={seriesChart} shownSeries={shownSeries} rows={rows} />
+  </div>
   <!-- Tabela wyników, gdzie wiersz to czas, kolumna to seria -->
-  <div class="table-responsive">
+  <div class="table-responsive table-box">
     <table class="table table-sm">
       <thead>
         <tr>
@@ -131,9 +141,14 @@
         </tr>
       </thead>
       <tbody>
-        {#each rows as row}
+        {#each rows as row, index}
           <tr>
-            <td>{new Date(row.timestamp).toLocaleString('pl-PL')}</td>
+            <td>
+              <!-- Kliknięcie czasu wyróżnia punkty tego wiersza na wykresie -->
+              <button type="button" class="btn btn-link p-0" onclick={() => seriesChart.highlight(index)}>
+                {new Date(row.timestamp).toLocaleString('pl-PL')}
+              </button>
+            </td>
             {#each shownSeries as series}
               <td>{row.values[series.id]}</td>
             {/each}
@@ -142,7 +157,37 @@
       </tbody>
     </table>
   </div>
+  </div>
    {/if}
 {:catch error}
   <p class="text-danger" role="alert">{error.message}</p>
 {/await}
+
+
+<style>
+  /* Wykres i tabela obok siebie */
+  .results {
+    display: flex;
+    gap: 1rem;
+  }
+
+  /* Wykres i tabela po połowie szerokości*/
+  .chart-box,
+  .table-box {
+    flex: 1;
+    /* bez tego wykres w układzie flex nie zwęża się przy zmniejszaniu okna */
+    min-width: 0;
+  }
+
+  /* Tabela najwyżej na pół ekranu, potem przewija się w obrębie swojego pola */
+  .table-box {
+    max-height: 50vh;
+  }
+
+  /* by na telefonie/wąskim ekranie wykres i tabela były jedno pod drugim */
+  @media (max-width: 1000px) {
+    .results {
+      flex-direction: column;
+    }
+  }
+</style>
