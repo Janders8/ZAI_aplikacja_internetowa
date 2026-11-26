@@ -6,6 +6,7 @@
   // https://stackoverflow.com/questions/77612695/svelte-5-change-component-on-login
   // https://stackoverflow.com/questions/10281962/is-there-a-minlength-validation-attribute-in-html
   import { post, put } from './api.js'
+  import SeriesAndSensors from './SeriesAndSensors.svelte'
 
   // Jeśli token jest już w przeglądarce (czyli użytkownik jest zalogowany) to od razu wyświetl widok dla zalogowanego
   const savedToken = sessionStorage.getItem('token')
@@ -22,13 +23,15 @@
   // Komunikat o błędzie
   let message = $state('')
 
-  // Wyświetlenie błędu z serwera, a w stycuacji wygaśnięcia tokenu (401) powrót do logowania
+  // Wyświetlenie błędu z serwera, a w sytuacji wygaśnięcia tokenu (401) powrót do logowania
   function showError(error) {
     if (error.status === 401) {
       sessionStorage.removeItem('token')
       loggedIn = false
+      message = error.message
+    } else {
+      alert(error.message)
     }
-    message = error.message
   }
 
   // Logowanie wraz z zapamiętaniem tokenu w przeglądarce
@@ -86,6 +89,10 @@
 <!-- widok dla zalogowanego -->
 {#if loggedIn}
   <button type="button" class="btn btn-outline-primary mb-3" onclick={logout}>Wyloguj</button>
+
+  <!-- Zarządzanie seriami i czujnikami -->
+  <SeriesAndSensors showError={showError} />
+
 
   <!-- Formularz zmiany hasła -->
   <h3>Zmiana hasła</h3>
