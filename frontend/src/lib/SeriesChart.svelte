@@ -121,4 +121,14 @@
     position: relative;
     height: 40vh;
   }
+
+
+  /* Do wydruku by wykres zmniejszyć do szerokości jego pola na kartce */
+  @media print {
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+  }
 </style>
+

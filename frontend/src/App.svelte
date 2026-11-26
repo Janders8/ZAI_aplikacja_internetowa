@@ -11,7 +11,7 @@
 
 <header class="container py-3">
   <h1 class="h4">Poziom morza</h1>
-  <nav>
+  <nav class="d-print-none">
     {#if view === 'public'}
       <button type="button" class="btn btn-outline-primary" onclick={() => (view = 'admin')}>Panel administratora</button>
     {:else}

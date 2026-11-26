@@ -5,6 +5,7 @@
   // https://svelte.dev/tutorial/svelte/group-inputs
   // https://getbootstrap.com/docs/5.3/content/tables/
   // https://date-fns.org/docs/format
+  // https://stackoverflow.com/questions/355313/how-do-i-hide-an-element-when-printing-a-web-page
   import { get } from './api.js'
   import { format, subDays } from 'date-fns'
   import SeriesChart from './SeriesChart.svelte'
@@ -102,7 +103,7 @@
 <h2>Wyniki pomiarów</h2>
 
 <!-- Filtry do wyboru serii i przedziału czasu -->
-<form class="mb-3" onsubmit={show}>
+<form class="mb-3 d-print-none" onsubmit={show}>
   <fieldset>
     <legend>Serie</legend>
     {#each allSeries as series}
@@ -190,4 +191,18 @@
       flex-direction: column;
     }
   }
+
+    /* Styl do wydruku*/
+  @media print {
+    /* By widać było całą tabelę bez przewijania */
+    .table-box {
+      max-height: none;
+    }
+    /* by czas w tabeli był zwyczajny, a nie jak do kliknięcia */
+    .btn-link {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
 </style>
