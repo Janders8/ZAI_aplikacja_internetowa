@@ -8,6 +8,7 @@
 # https://github.com/theskumar/python-dotenv
 # https://docs.python.org/3/library
 # https://stackoverflow.com/questions/1309989/parameter-substitution-for-a-sqlite-in-clause
+# https://stackoverflow.com/questions/20646822/how-to-serve-static-files-in-flask
 
 import hashlib
 import os
@@ -30,7 +31,9 @@ from werkzeug.exceptions import HTTPException
 # Wczytanie ustawień loginu i hasła admina z pliku .env
 load_dotenv()
 
-app = Flask(__name__)
+
+# by flask obsługiwał frontend pod tym samym adresem co api
+app = Flask(__name__, static_folder="../frontend/dist", static_url_path="")
 
 
 # Ścieżka do pliku bazy danych
@@ -113,6 +116,8 @@ def check_accept_header():
 @app.after_request
 def add_security_headers(response):
     response.headers["X-Content-Type-Options"] = "nosniff"
+    # Dodanie CSP, by przeglądarka wczytywała skrypty, style i obrazki tylko z serwera, anie zewnętrznych serwisów
+    response.headers["Content-Security-Policy"] = "default-src 'self'"
     return response
 
 
@@ -188,6 +193,18 @@ def require_sensor():
     if sensor is None:
         abort(401, "Brak lub niepoprawny klucz API czujnika")
     return sensor
+
+
+# ---------------------------------------------------------------------------
+# Frontend
+# ---------------------------------------------------------------------------
+
+# Zwrócenie strony głównej z frontendu
+@app.get("/")
+def index():
+    return app.send_static_file("index.html")
+
+
 
 # ---------------------------------------------------------------------------
 # API - stan serwera i logowanie
